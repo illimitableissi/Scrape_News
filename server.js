@@ -35,39 +35,39 @@ var MONGODB_URI = process.env.MONGODB_URI || "mongodb://192.168.99.100/mongoHead
 
 mongoose.connect(MONGODB_URI,{ useNewUrlParser: true });
 
-    // main page
-    app.get('/', (req, res)=>{
-        // look for existing articles in database
-        db.Article.find({})
-        .sort({timestamp: -1})
-        .then((dbArticle)=>{
-            if (dbArticle.length == 0) {
-                // if no articles found, render index
-                res.render('index');
-            }
-            else {
-                // if there are existing articles, show articles
-                res.redirect('/');
-            }
-        })
-        .catch((err)=>{
-            res.json(err);
-        });
+// main page
+app.get('/', (req, res)=>{
+    // look for existing articles in database
+    db.Article.find({})
+    .sort({timestamp: -1})
+    .then((dbArticle)=>{
+        if (dbArticle.length == 0) {
+            // if no articles found, render index
+            res.render('index');
+        }
+        else {
+            // if there are existing articles, show articles
+            res.redirect('/');
+        }
+    })
+    .catch((err)=>{
+        res.json(err);
     });
+});
 
-    // saved articles page
-    app.get('/saved', (req, res)=>{
-        db.Article.find({saved: true})
-        .then((dbArticle)=>{
-            let articleObj = {article: dbArticle};
+// saved articles page
+app.get('/saved', (req, res)=>{
+    db.Article.find({saved: true})
+    .then((dbArticle)=>{
+        let articleObj = {article: dbArticle};
 
-            // render page with articles found
-            res.render('saved', articleObj);
-        })
-        .catch((err)=>{
-            res.json(err);
-        });
+        // render page with articles found
+        res.render('saved', articleObj);
+    })
+    .catch((err)=>{
+        res.json(err);
     });
+});
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
@@ -103,25 +103,12 @@ app.get("/scrape", function(req, res) {
             console.log(err);
           });
       });
-      // Send a message to the client
-      res.send("Scrape Complete");
+      console.log("Scrape Complete");
     });
   });
 
-  app.get("/saved", function(req, res) {
-	Article.find({issaved: true}, null, {sort: {created: -1}}, function(err, data) {
-		if(data.length === 0) {
-			res.render("placeholder", {message: "You have not saved any articles yet. Try to save some currently updated news by simply clicking \"Save Article\"!"});
-		}
-		else {
-			res.render("saved", {saved: data});
-		}
-	});
-});
-
-
   
-  app.post("/save/:id", function(req, res) {
+  app.post("/saved/:id", function(req, res) {
 	db.Article.findById(req.params.id, function(err, data) {
 		if (data.issaved) {
 			Article.findByIdAndUpdate(req.params.id, {$set: {issaved: false, status: "Save Article"}}, {new: true}, function(err, data) {
