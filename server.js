@@ -28,4 +28,6 @@ var MONGODB_URI = process.env.MONGODB_URI || "mongodb://192.168.99.100/mongoHead
 
 mongoose.connect(MONGODB_URI,{ useNewUrlParser: true });
 
-console.log("server is working")
+app.listen(PORT, function() {
+    console.log("App running on port " + PORT + "!");
+  });
